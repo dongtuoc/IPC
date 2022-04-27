@@ -141,17 +141,14 @@ void send(const Message *message)
     char *ptr = shmem;
     memcpy(ptr + 1, message, message->size);
     *ptr = 0xA;
-    printf("alice, send : 0x%x\n", *ptr);
 }
 
 const Message *recv()
 {
     static Message *m = (Message *)malloc(MESSAGE_SIZES[4]);
     while(1) {
-         //sleep(0.5);
          char *ptr = shmem;
 				 if (0x5 == *ptr) {
-           printf("alice, rev : 0x%x\n", *ptr);
            memcpy(m, ptr + 1, sizeof(Message));
            char *ptr1 = ptr + 1 + sizeof(Message);
            memcpy(m->payload, ptr1, m->payload_size());
@@ -159,8 +156,6 @@ const Message *recv()
          }
     }
 }
-
-int cnt = 0;
 
 int main()
 {
@@ -178,10 +173,7 @@ int main()
     } else {
       printf("alice: shmget succ..\n");
     }
-    //sleep(5);
     shmem = (char *)shmat(shmid, NULL, 0);
-    printf("alice, shmem = %p\n", shmem);
-    //sleep(5);
 
     while (true)
     {
@@ -190,7 +182,6 @@ int main()
         {
             send(m1);
             const Message *m2 = recv();
-            printf("alice, recv %3d\n", cnt++);
             record(m2);
         }
         else

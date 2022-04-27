@@ -7,17 +7,14 @@ void send(const Message *message)
     char *ptr = shmem;
     memcpy(ptr + 1, message, message->size);
     *ptr = 0x5;
-    printf("bob, send : 0x%x\n", *ptr);
 }
 
 const Message *recv()
 {
     static Message *m = (Message *)malloc(MESSAGE_SIZES[4]);
     while(1) {
-      //sleep(2);
       char *ptr = shmem;
       if (0xA == *ptr) {
-          printf("bob, rev : 0x%x\n", *ptr);
           memcpy(m, ptr + 1, sizeof(Message));
           char *ptr1 = ptr + 1 + sizeof(Message);
           memcpy(m->payload, ptr1, m->payload_size());
@@ -42,10 +39,7 @@ int main()
     } else {
        printf("bob: shmget succ...\n");
     }
-    //sleep(5);
     shmem = (char *)shmat(shmid, NULL, 0);
-    printf("bob: shmem = %p\n", shmem);
-    //sleep(5);
 
     Message *m2 = (Message *)malloc(MESSAGE_SIZES[4]);
     while (true)
